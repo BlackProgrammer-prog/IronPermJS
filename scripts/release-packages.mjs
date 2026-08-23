@@ -212,6 +212,20 @@ function assertPublishEnvironment(version) {
   if (trackedChanges) fail("tracked files are modified; commit them first.");
 }
 
+function publishArgs(filename, dryRun = false) {
+  const args = [
+    "publish",
+    filename,
+    "--access",
+    "public",
+    process.env.GITHUB_ACTIONS === "true"
+      ? "--provenance"
+      : "--provenance=false",
+  ];
+  if (dryRun) args.push("--dry-run");
+  return args;
+}
+
 if (!supportedActions.has(action)) {
   fail(`unknown action "${action}". Use pack, verify, dry-run, or publish.`);
 }
@@ -221,14 +235,14 @@ const version = verifyPackages(packedPackages);
 
 if (action === "dry-run") {
   for (const packed of packedPackages) {
-    run("npm", ["publish", packed.filename, "--access", "public", "--dry-run"]);
+    run("npm", publishArgs(packed.filename, true));
   }
 }
 
 if (action === "publish") {
   assertPublishEnvironment(version);
   for (const packed of packedPackages) {
-    run("npm", ["publish", packed.filename, "--access", "public"]);
+    run("npm", publishArgs(packed.filename));
   }
 }
 

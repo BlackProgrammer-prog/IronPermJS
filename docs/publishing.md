@@ -91,6 +91,16 @@ Inspect every tarball in `.release/`. Publish in this dependency order:
 
 Use the generated tarballs, public access, and your normal secure npm authentication. Do not place a long-lived npm token in the repository.
 
+For the first authenticated publication from a maintainer terminal, run:
+
+```bash
+IRONPERMJS_NPM_SCOPE=@ironpermjs \
+IRONPERMJS_PUBLISH=1 \
+pnpm release:publish
+```
+
+Local publication explicitly disables provenance because npm provenance requires a supported CI provider. After the packages exist, configure GitHub trusted publishing and use the release workflow; GitHub Actions publications retain provenance.
+
 ## Configure npm trusted publishing
 
 After every package exists:
