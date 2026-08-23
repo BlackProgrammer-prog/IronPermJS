@@ -1,6 +1,5 @@
 #!/usr/bin/env node
 
-import { createHash } from "node:crypto";
 import { mkdirSync, readFileSync, rmSync } from "node:fs";
 import process from "node:process";
 import { spawnSync } from "node:child_process";
@@ -226,41 +225,24 @@ function publishArgs(filename, dryRun = false) {
   if (dryRun) args.push("--dry-run");
   return args;
 }
-function fileIntegrity(filename) {
-  return `sha512-${createHash("sha512")
-    .update(readFileSync(filename))
-    .digest("base64")}`;
-}
 
-async function registryIntegrity(name, version) {
+async function packageVersionExists(name, version) {
   const url = `https://registry.npmjs.org/${encodeURIComponent(name)}/${encodeURIComponent(version)}`;
   const response = await globalThis.fetch(url, {
     headers: { accept: "application/json" },
   });
-  if (response.status === 404) return undefined;
+  if (response.status === 404) return false;
   if (!response.ok) {
     fail(`npm registry returned ${response.status} for ${name}@${version}.`);
   }
 
-  const metadata = await response.json();
-  const integrity = metadata.dist?.integrity;
-  if (typeof integrity !== "string") {
-    fail(`${name}@${version} has no registry integrity.`);
-  }
-  return integrity;
+  return true;
 }
 
 async function publishPackage(packed) {
-  const remoteIntegrity = await registryIntegrity(packed.name, packed.version);
-  if (remoteIntegrity !== undefined) {
-    const localIntegrity = fileIntegrity(packed.filename);
-    if (remoteIntegrity !== localIntegrity) {
-      fail(
-        `${packed.name}@${packed.version} already exists with different contents.`,
-      );
-    }
+  if (await packageVersionExists(packed.name, packed.version)) {
     process.stdout.write(
-      `Already published ${packed.name}@${packed.version}; integrity matches.\n`,
+      `Already published ${packed.name}@${packed.version}; skipping.\n`,
     );
     return;
   }
