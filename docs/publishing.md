@@ -126,13 +126,7 @@ The workflow uses:
 
 ## Configure the GitHub repository
 
-Create a repository Actions variable:
-
-```text
-NPM_SCOPE=@your-owned-scope
-```
-
-It must exactly match the scope in every public package name. The release script intentionally fails when it is missing or mismatched.
+The publish workflow pins the verified npm scope to `@ironpermjs`; no repository variable or npm token is required.
 
 Recommended repository settings:
 
@@ -147,9 +141,9 @@ Recommended repository settings:
 
 1. ensure CI is green on the release commit
 2. create tag `vX.Y.Z`
-3. create a GitHub Release for that exact tag
-4. publish the GitHub Release
-5. watch the `Publish packages` workflow
+3. push the tag; this automatically starts the `Publish packages` workflow
+4. optionally create a GitHub Release for the same tag and add release notes
+5. watch the workflow
 6. verify provenance and package contents on npm
 7. install the CLI in a clean test project
 

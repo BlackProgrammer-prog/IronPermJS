@@ -1,9 +1,9 @@
 name: Publish packages
 
 on:
-  release:
-    types:
-      - published
+  push:
+    tags:
+      - "v*"
 
 permissions:
   contents: read
@@ -19,7 +19,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Check out release tag
+      - name: Check out version tag
         uses: actions/checkout@v7
 
       - name: Install pnpm
@@ -40,6 +40,6 @@ jobs:
 
       - name: Validate and publish exact tarballs
         env:
-          IRONPERMJS_NPM_SCOPE: ${{ vars.NPM_SCOPE }}
+          IRONPERMJS_NPM_SCOPE: "@ironpermjs"
           IRONPERMJS_PUBLISH: "1"
         run: pnpm release:publish

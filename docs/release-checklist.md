@@ -18,12 +18,11 @@ Use this checklist for every fixed-version monorepo release.
 
 ## GitHub and npm
 
-- [ ] Repository variable `NPM_SCOPE` matches package names.
 - [ ] Trusted Publisher points to `BlackProgrammer-prog/IronPermJS` and `publish.yml`.
 - [ ] Trusted Publisher is configured for every package.
 - [ ] Required CI checks pass on the release commit.
 - [ ] Tag is exactly `vX.Y.Z`.
-- [ ] GitHub Release uses the same tag and changelog notes.
+- [ ] The version tag was pushed and the optional GitHub Release uses the same tag.
 
 ## After publication
 

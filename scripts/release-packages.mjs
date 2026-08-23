@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 
+import { createHash } from "node:crypto";
 import { mkdirSync, readFileSync, rmSync } from "node:fs";
 import process from "node:process";
 import { spawnSync } from "node:child_process";
@@ -225,6 +226,47 @@ function publishArgs(filename, dryRun = false) {
   if (dryRun) args.push("--dry-run");
   return args;
 }
+function fileIntegrity(filename) {
+  return `sha512-${createHash("sha512")
+    .update(readFileSync(filename))
+    .digest("base64")}`;
+}
+
+async function registryIntegrity(name, version) {
+  const url = `https://registry.npmjs.org/${encodeURIComponent(name)}/${encodeURIComponent(version)}`;
+  const response = await globalThis.fetch(url, {
+    headers: { accept: "application/json" },
+  });
+  if (response.status === 404) return undefined;
+  if (!response.ok) {
+    fail(`npm registry returned ${response.status} for ${name}@${version}.`);
+  }
+
+  const metadata = await response.json();
+  const integrity = metadata.dist?.integrity;
+  if (typeof integrity !== "string") {
+    fail(`${name}@${version} has no registry integrity.`);
+  }
+  return integrity;
+}
+
+async function publishPackage(packed) {
+  const remoteIntegrity = await registryIntegrity(packed.name, packed.version);
+  if (remoteIntegrity !== undefined) {
+    const localIntegrity = fileIntegrity(packed.filename);
+    if (remoteIntegrity !== localIntegrity) {
+      fail(
+        `${packed.name}@${packed.version} already exists with different contents.`,
+      );
+    }
+    process.stdout.write(
+      `Already published ${packed.name}@${packed.version}; integrity matches.\n`,
+    );
+    return;
+  }
+
+  run("npm", publishArgs(packed.filename));
+}
 
 if (!supportedActions.has(action)) {
   fail(`unknown action "${action}". Use pack, verify, dry-run, or publish.`);
@@ -242,7 +284,7 @@ if (action === "dry-run") {
 if (action === "publish") {
   assertPublishEnvironment(version);
   for (const packed of packedPackages) {
-    run("npm", publishArgs(packed.filename));
+    await publishPackage(packed);
   }
 }
 
