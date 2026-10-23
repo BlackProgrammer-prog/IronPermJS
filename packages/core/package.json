@@ -43,6 +43,6 @@
     "build": "tsc -p tsconfig.build.json"
   },
   "dependencies": {
-    "@casl/ability": "^7.0.1"
+    "@casl/ability": "^7.0.2"
   }
 }
