@@ -43,8 +43,8 @@
     "build": "tsc -p tsconfig.build.json"
   },
   "dependencies": {
-    "@casl/ability": "^7.0.1",
-    "@casl/react": "^7.0.1"
+    "@casl/ability": "^7.1.1",
+    "@casl/react": "^7.1.0"
   },
   "peerDependencies": {
     "react": "^18.0.0 || ^19.0.0"
