@@ -6,15 +6,15 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@casl/ability": "^7.0.1",
+    "@casl/ability": "^7.1.1",
     "@ironpermjs/next": "workspace:*",
-    "next": "^16.3.3",
-    "react": "^19.0.0",
-    "react-dom": "^19.0.0"
+    "next": "^16.4.4",
+    "react": "^19.3.1",
+    "react-dom": "^19.3.1"
   },
   "devDependencies": {
-    "@types/react": "^19.0.0",
-    "@types/react-dom": "^19.0.0",
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
     "typescript": "5.9.3"
   }
 }
